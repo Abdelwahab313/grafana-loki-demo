@@ -1,0 +1,39 @@
+version: "3"
+
+networks:
+  loki:
+
+services:
+  loki:
+    image: grafana/loki:2.6.1
+    command: -config.file=/etc/loki/loki-config.yml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./config/loki-config.yml:/etc/loki/loki-config.yml
+    networks:
+      - loki
+
+  promtail:
+    image: grafana/promtail:2.6.1
+    volumes:
+      # custom config will read logs from the containers of this project
+      - ./config/promtail-config.yml:/etc/promtail/config.yml
+      # to read container labels and logs
+      - /home/admin/.pm2/logs:/var/dm-node/logs:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - loki
+
+  grafana:
+    image: grafana/grafana:latest
+    user: "472"
+    ports:
+      - "8081:3000"
+    volumes:
+      # directory must be created first, with uid:gid 472:472
+      - ./volumes/grafana:/var/lib/grafana
+      # automatically configure the loki datasource
+      - ./config/grafana/provisioning/:/etc/grafana/provisioning/
+    networks:
+      - loki

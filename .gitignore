@@ -1,0 +1,9 @@
+
+
+# grafana volumes
+volumes/grafana
+volumes/loki
+
+
+
+logs/
