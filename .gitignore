@@ -3,7 +3,6 @@
 # grafana volumes
 volumes/grafana
 volumes/loki
-
-
+volumes/tempo
 
 logs/
